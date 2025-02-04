@@ -99,3 +99,15 @@ curl -X POST -H "Content-Type: application/json" \
   --data @/opt/debezium/postgres-connector.json \
   http://localhost:8083/connectors
 ```
+
+- Verify the Connector
+
+```bash
+curl -X GET http://localhost:8083/connectors
+```
+
+It will show
+
+```json
+["postgres-source-connector"]
+```
