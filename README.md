@@ -58,6 +58,52 @@ SELECT * FROM pg_create_logical_replication_slot('debezium_slot', 'pgoutput');
 
 ✅ Kafka (KRaft mode) is already running on Server-1, so configure Debezium.
 
+- Make a separate directory for plugins and navigate in the directory
+
+```bash
+ mkdir /usr/local/share/kafka/plugins
+ cd /usr/local/share/kafka/plugins
+```
+
+- Manually Download & Extract the Correct JARs
+
+```bash
+cd /usr/local/share/kafka/plugins/debezium-postgres/
+wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/2.5.0.Final/debezium-connector-postgres-2.5.0.Final-plugin.tar.gz
+tar -xvzf debezium-connector-postgres-2.5.0.Final-plugin.tar.gz
+rm debezium-connector-postgres-2.5.0.Final-plugin.tar.gz
+```
+This will extract the required JARs into the correct directory.
+
+- Set Plugin Path in Kafka Connect
+```bash
+vi kafka/config/connect-distributed.properties
+```
+Change it to 
+
+```bash
+plugin.path=/usr/local/share/kafka/plugins/debezium-postgres/
+```
+
+- Stop Kafka Connect if it's running:
+
+```bash
+ps aux | grep connect-distributed
+kill -9 <PID>  # Replace <PID> with actual process ID
+```
+
+- Start the kafka connect again to apply changes
+
+```bash
+./bin/connect-distributed.sh config/connect-distributed.properties &
+```
+Wait a few seconds, then check if Debezium appears.
+
+```bash
+curl -X GET http://161.97.143.145:8083/connector-plugins
+```
+Now, `io.debezium.connector.postgresql.PostgresConnector` should appear.
+
 - Make a separate directory for the connector JSON and navigate in the dorectory
 
 ```bash
