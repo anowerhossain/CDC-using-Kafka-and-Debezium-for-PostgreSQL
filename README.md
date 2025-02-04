@@ -24,3 +24,27 @@ max_wal_senders = 4
 sudo systemctl restart postgresql
 ```
 
+### Create a Replication User in PostgreSQL
+- Debezium needs a user with replication privileges.
+
+```sql
+CREATE USER debezium WITH REPLICATION LOGIN PASSWORD 'debezium123';
+ALTER USER debezium WITH SUPERUSER;
+```
+
+### Create a Table for CDC in PostgreSQL (Server-1)
+
+```sql
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+Enable replication for this table:
+
+```sql
+ALTER TABLE customers REPLICA IDENTITY FULL;
+```
+
