@@ -157,3 +157,41 @@ It will show
 ```json
 ["postgres-source-connector"]
 ```
+
+### Kafka -JDBC sink connector
+
+- Download the kafka jdbc sink connector from confluent
+
+```bash
+wget https://packages.confluent.io/maven/io/confluent/kafka-connect-jdbc/10.6.0/kafka-connect-jdbc-10.6.0.jar
+```
+
+- Make a seperate directory inside the plugin directory
+```bash
+mkdir -p /usr/local/share/kafka/plugins/kafka-connect-jdbc
+```
+
+- Move the downloaded .jar file inside the directory we created
+```bash
+mv kafka-connect-jdbc-10.6.0.jar /usr/local/share/kafka/plugins/kafka-connect-jdbc/
+```
+
+- Stopping the current kafka connect process
+```bash
+ps aux | grep connect-distributed
+kill -9 <PID>
+```
+
+- Restart the kafka connect process to load the plugin 
+```bash
+./bin/connect-distributed.sh config/connect-distributed.properties &
+```
+
+- To see the connected plugin run
+```bash
+curl -X GET http://localhost:8083/connector-plugins
+```
+Look for an entry similar to `io.confluent.connect.jdbc.JdbcSinkConnector` in the returned list.
+
+
+
