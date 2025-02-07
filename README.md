@@ -193,5 +193,44 @@ curl -X GET http://localhost:8083/connector-plugins
 ```
 Look for an entry similar to `io.confluent.connect.jdbc.JdbcSinkConnector` in the returned list.
 
+- Navigate to `/opt/debezium/` and create `postgres-sink-connector.json`
+```bash
+cd /opt/debezium/
+touch postgres-sink-connector.json
+```
 
+- Set all the configuration inside the `postgres-sink-connector.json`
+```json
+{
+  "name": "postgres-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max": "1",
+    "connection.url": "jdbc:postgresql://75.119.ANO.WER:5432/postgres",
+    "connection.user": "postgres",
+    "connection.password": "your_password",
+    "auto.create": "true",
+    "auto.evolve": "true",
+    "insert.mode": "upsert",
+    "pk.fields": "id",
+    "pk.mode": "record_value",
+    "topics": "server1.public.customers"
+  }
+}
+```
+- Run the following command to load the JDBC Sink Connector into Kafka Connect
+```bash
+curl -X POST -H "Content-Type: application/json" \
+  --data @/opt/debezium/postgres-sink-connector.json \
+  http://161.97.ANO.WER:8083/connectors
+```
 
+- Verify that the connector is running
+```bash
+curl -X GET http://161.97.ANO.WER:8083/connectors
+```
+
+If everything goes fine you will see 
+```python
+["postgres-source-connector", "postgres-sink-connector"]
+```
